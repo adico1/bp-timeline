@@ -1,3 +1,5 @@
+import TimelineItemType from './TimelineItemType';
+
 const TimelineItemTypeAllow = {
   Movie: {
     Score: false,
@@ -34,6 +36,12 @@ const TimelineItemTypeAllow = {
   DrawAboutIt: {
     Score: false,
     Zoom: true,
+  },
+  getZoomByType(type) {
+    return TimelineItemTypeAllow[TimelineItemType[type]].Zoom;
+  },
+  getScoreByType(type) {
+    return TimelineItemTypeAllow[TimelineItemType[type]].Score;
   },
 };
 

@@ -23,6 +23,7 @@ import SearchComponent from './SearchComponent.vue';
 import TimelineItemSet from './TimelineItemSet.vue';
 import DetailModal from './DetailModal.vue';
 import timelineItemSets from '../mocks/timeline.mock';
+import types from '../models/TimelineItemTypeAllow';
 
 export default {
   name: 'Timeline',
@@ -42,9 +43,9 @@ export default {
   },
   methods: {
     showDetail(timelineItem) {
-      // eslint-disable-next-line no-console
-      console.log('TimelineItemSet=>itemClickHandler', timelineItem);
-      this.detailTimelineItem = timelineItem;
+      if (types.getZoomByType(timelineItem.type)) {
+        this.detailTimelineItem = timelineItem;
+      }
     },
   },
 };

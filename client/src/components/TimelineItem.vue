@@ -19,22 +19,8 @@
 
 <script>
 import TimelineItemModel from '../models/TimelineItemModel';
-import TimelineItemType from '../models/TimelineItemType';
 import types from '../models/TimelineItemTypeAllow';
-
-function formatDate(date) {
-  const options = { year: 'numeric', month: 'short', day: 'numeric' };
-
-  return date.toLocaleDateString('en-US', options);
-}
-
-function formatTime(date) {
-  const hours = `${date.getHours()}`.padStart(2, '0');
-  const minutes = `${date.getMinutes()}`.padStart(2, '0');
-  const ampm = hours >= 12 ? 'pm' : 'am';
-
-  return `${hours}:${minutes} ${ampm}`;
-}
+import DateUtil from '../utils/date-util';
 
 export default {
   name: 'TimelineItem',
@@ -44,14 +30,14 @@ export default {
   computed: {
     formattedDate() {
       if (this.timelineItem) {
-        return formatDate(this.timelineItem.date);
+        return DateUtil.formatDate(this.timelineItem.date);
       }
 
       return '';
     },
     formattedTime() {
       if (this.timelineItem) {
-        return formatTime(this.timelineItem.date);
+        return DateUtil.formatTime(this.timelineItem.date);
       }
 
       return '';
@@ -69,12 +55,10 @@ export default {
       return '';
     },
     isViewType() {
-      // eslint-disable-next-line no-console
-      console.log('isViewType', types[TimelineItemType[this.timelineItem.type]]);
-      return types[TimelineItemType[this.timelineItem.type]].Zoom;
+      return types.getZoomByType(this.timelineItem.type);
     },
     isScoreType() {
-      return types[TimelineItemType[this.timelineItem.type]].Score;
+      return types.getScoreByType(this.timelineItem.type);
     },
   },
   methods: {
