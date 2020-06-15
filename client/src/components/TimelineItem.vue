@@ -1,32 +1,85 @@
 <template>
-  <article class="timeline-item-podium">
+  <article @click="itemClickHandler()" class="timeline-item-podium">
     <div class="flex-thin">
-      <img class="timeline-item-image" src="../../../assets/topics/adalovelace.png" alt="">
+      <img
+        v-if="this.timelineItem && this.timelineItem.image"
+        class="timeline-item-image"
+        v-bind:src="require('../../../assets/topics/' + this.timelineItem.image)"
+        alt="">
     </div>
-    <div class="flex-stretch">{{ timeLineItem.title }}<br>
+    <div class="flex-stretch">{{ timelineItem.title }}<br>
     {{ formattedDate }} · {{ formattedTime }}</div>
     <div class="flex-base">
-      Score {{ timeLineItem.score }}/10
-      <eye-outline-icon></eye-outline-icon>
-       View Work
+      <div v-if="isScoreType">Score {{ timelineItem.score }}/{{ timelineItem.ofScore }}</div>
+      <div v-if="isViewType"><eye-outline-icon></eye-outline-icon>
+       View Work</div>
     </div>
   </article>
 </template>
 
 <script>
 import TimelineItemModel from '../models/TimelineItemModel';
+import TimelineItemType from '../models/TimelineItemType';
+import types from '../models/TimelineItemTypeAllow';
+
+function formatDate(date) {
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+
+  return date.toLocaleDateString('en-US', options);
+}
+
+function formatTime(date) {
+  const hours = `${date.getHours()}`.padStart(2, '0');
+  const minutes = `${date.getMinutes()}`.padStart(2, '0');
+  const ampm = hours >= 12 ? 'pm' : 'am';
+
+  return `${hours}:${minutes} ${ampm}`;
+}
 
 export default {
   name: 'TimelineItem',
   props: {
-    timeLineItem: TimelineItemModel,
+    timelineItem: TimelineItemModel,
   },
   computed: {
     formattedDate() {
-      return 'Oct 28, 2019';
+      if (this.timelineItem) {
+        return formatDate(this.timelineItem.date);
+      }
+
+      return '';
     },
     formattedTime() {
-      return '7:08 pm';
+      if (this.timelineItem) {
+        return formatTime(this.timelineItem.date);
+      }
+
+      return '';
+    },
+    getImage() {
+      // eslint-disable-next-line no-console
+      console.log('getImage', this.timelineItem);
+
+      if (this.timelineItem) {
+        // eslint-disable-next-line no-console
+        console.log('hello');
+        return `../../../../assets/topics/${this.timelineItem.image}`;
+      }
+
+      return '';
+    },
+    isViewType() {
+      // eslint-disable-next-line no-console
+      console.log('isViewType', types[TimelineItemType[this.timelineItem.type]]);
+      return types[TimelineItemType[this.timelineItem.type]].Zoom;
+    },
+    isScoreType() {
+      return types[TimelineItemType[this.timelineItem.type]].Score;
+    },
+  },
+  methods: {
+    itemClickHandler() {
+      this.$emit('click', this.timelineItem);
     },
   },
 };
