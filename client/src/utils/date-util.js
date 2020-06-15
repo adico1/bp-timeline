@@ -10,4 +10,8 @@ export default class DateUtil {
     const ampm = hours >= 12 ? 'pm' : 'am';
     return `${hours}:${minutes} ${ampm}`;
   }
+
+  static getMonthNameLong(date) {
+    return date.toLocaleDateString(undefined, { month: 'long' });
+  }
 }
