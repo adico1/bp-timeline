@@ -2,8 +2,8 @@
   <section>
     <div class="timeline-month-name">{{ timelineitemset.month }}</div>
     <TimelineItem
-      v-for="(timelineitem, index) in timelineitemset.items"
-      :key="index"
+      v-for="(timelineitem) in timelineitemset.items"
+      :key="timelineitem.id"
       :timelineItem="timelineitem"
       @click="itemClickHandler"
       class="timeline-item">

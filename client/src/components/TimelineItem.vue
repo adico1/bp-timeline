@@ -1,5 +1,5 @@
 <template>
-  <article @click="itemClickHandler()" class="timeline-item-podium">
+  <article class="timeline-item-podium">
     <div class="flex-thin">
       <img
         v-if="this.timelineItem && this.timelineItem.image"
@@ -12,8 +12,13 @@
     {{ formattedDate }} · {{ formattedTime }}</div>
     <div class="flex-base">
       <div v-if="isScoreType">Score {{ timelineItem.score }}/{{ timelineItem.ofScore }}</div>
-      <div v-if="isViewType"><eye-outline-icon></eye-outline-icon>
-       View Work</div>
+      <div class="action" @click="itemClickHandler()" v-if="isViewType">
+        <eye-outline-icon></eye-outline-icon> View Work
+      </div>
+      <div class="action" @click="deleteItemHandler(timelineItem.id)">
+        <delete-icon></delete-icon>
+         Delete
+      </div>
     </div>
   </article>
 </template>
@@ -84,19 +89,31 @@ export default {
   position: relative;
 }
 .flex-base {
-  flex: 1;
+  justify-content: flex-end;
+  display: flex;
+  flex: 1.5;
+}
+.flex-base div {
+  padding-right: 20px;
 }
 .flex-stretch {
-  flex: 6;
+  flex: 5.5;
 }
 .product-tag {
   background-color: #ffff00;
-  width: 10px;
-  height: 10px;
+  border: 1px solid #000;
+  width: 15px;
+  height: 15px;
   position: absolute;
   font-size: 10px;
+  font-weight: bold;
+  line-height: 15px;
   border-radius: 50%;
   top: 22px;
   left: 20px;
+  text-align: center;
+}
+.action {
+  cursor: pointer;
 }
 </style>
