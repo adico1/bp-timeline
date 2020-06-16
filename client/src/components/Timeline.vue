@@ -119,7 +119,12 @@ export default {
     axios
       .get(apiUrl)
       .then((response) => {
-        this.timelineItemSets = TimelineMapper.mapV1(response.data);
+        let { data } = response;
+
+        if (this.version === 'v2') {
+          data = TimelineMapper.mapv2tov1(data);
+        }
+        this.timelineItemSets = TimelineMapper.mapV1(data);
         return this.info;
       })
       .catch((error) => {
