@@ -1,14 +1,15 @@
 <template>
   <nav>
     <div class="search-form">
-      <form>
-        <input class="search-timeline-input" placeholder="Search Timeline">
-        <button class="search-button"><magnify-icon class="icon-2x"></magnify-icon></button>
-      </form>
+      <input v-model="query" class="search-timeline-input" placeholder="Search Timeline">
+      <button class="search-button" @click="searchClickHandler">
+        <magnify-icon class="icon-2x"></magnify-icon>
+      </button>
     </div>
     <div class="filter-header">Filter By:</div>
     <button
-      v-for="(filter, index) in filters" :key="index"
+      v-for="([filter,filterType], index) in filters" :key="index"
+      @click="filterClickHandler(filter, filterType)"
       class="filter-button"
       :class="{ 'filter-button-active': selectedFilter === filter }">
         {{filter}}
@@ -17,15 +18,33 @@
 </template>
 
 <script>
+import timelineItemTypeConfig from '../models/TimelineItemTypeConfig';
+
 export default {
   name: 'SearchComponent',
   props: {
   },
   data() {
     return {
-      filters: ['All Work', 'Movie', 'Quiz', 'Easy Quiz'],
+      filters: [
+        ['All Work', 'All Work'],
+        ...Object
+          .keys(timelineItemTypeConfig)
+          .map(key => [
+            timelineItemTypeConfig[key].FilterName,
+            timelineItemTypeConfig[key].KeyName])],
       selectedFilter: 'All Work',
+      query: '',
     };
+  },
+  methods: {
+    searchClickHandler() {
+      this.$emit('search-query', this.query);
+    },
+    filterClickHandler(filter, filterType) {
+      this.selectedFilter = filter;
+      this.$emit('search-filter', filterType);
+    },
   },
 };
 </script>

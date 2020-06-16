@@ -19,7 +19,7 @@
 
 <script>
 import TimelineItemModel from '../models/TimelineItemModel';
-import types from '../models/TimelineItemTypeAllow';
+import types from '../utils/timeline-item-type.util';
 import DateUtil from '../utils/date-util';
 
 export default {

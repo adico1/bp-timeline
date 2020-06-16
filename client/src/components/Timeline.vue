@@ -2,9 +2,11 @@
   <div>
     <section class="timeline-podium">
       <h1>Timeline</h1>
-      <SearchComponent></SearchComponent>
+      <SearchComponent
+        @search-query="queryChangedHandler"
+        @search-filter="filterChangedHandler"></SearchComponent>
       <TimelineItemSet @show-detail="showDetail"
-        v-for="(timelineItemSet, index) in timelineItemSets"
+        v-for="(timelineItemSet, index) in filtered"
         :key="index"
         :timelineitemset="timelineItemSet">
       </TimelineItemSet>
@@ -24,8 +26,10 @@ import SearchComponent from './SearchComponent.vue';
 import TimelineItemSet from './TimelineItemSet.vue';
 import DetailModal from './DetailModal.vue';
 import timelineItemSets from '../mocks/timeline.mock';
-import types from '../models/TimelineItemTypeAllow';
+import types from '../utils/timeline-item-type.util';
 import TimelineMapper from '../mappers/TimelineMapper';
+import TimelineItemSetModel from '../models/TimelineItemSetModel';
+import TimelineItemType from '../models/TimelineItemType';
 
 export default {
   name: 'Timeline',
@@ -41,6 +45,9 @@ export default {
     return {
       timelineItemSets,
       detailTimelineItem: null,
+      maxItems: 10,
+      query: '',
+      filter: 'All Work',
     };
   },
   methods: {
@@ -48,6 +55,48 @@ export default {
       if (types.getZoomByType(timelineItem.type)) {
         this.detailTimelineItem = timelineItem;
       }
+    },
+    queryChangedHandler(query) {
+      this.query = query;
+    },
+    filterChangedHandler(filter) {
+      this.filter = filter;
+    },
+    titleContains(timelineItem, query) {
+      return timelineItem.title.indexOf(query) > -1;
+    },
+    filterMatch(timelineItem, filter) {
+      if (filter === 'All Work') {
+        return true;
+      }
+      return timelineItem.type === TimelineItemType[filter];
+    },
+  },
+  computed: {
+    filtered() {
+      if (this.query === '' && this.filter === 'All Work') {
+        return this.timelineItemSets;
+      }
+
+      let count = 0;
+      const newTimelineItemSets = [];
+      this.timelineItemSets.forEach((timelineItemSet) => {
+        const items = timelineItemSet.items.filter((timelineItem) => {
+          if (count >= this.maxItems) {
+            return false;
+          }
+          count += 1;
+          return this.titleContains(timelineItem, this.query)
+            && this.filterMatch(timelineItem, this.filter);
+        });
+        const newTimelineItemSet = new TimelineItemSetModel(items, timelineItemSet.month);
+
+        if (newTimelineItemSet.items.length) {
+          newTimelineItemSets.push(newTimelineItemSet);
+        }
+      });
+
+      return newTimelineItemSets;
     },
   },
   mounted() {
