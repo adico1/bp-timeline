@@ -6,10 +6,10 @@
       </div>
       <div class="dialog-content">
         <div class="item-info-podium">
-          <div>
+          <div :v-if="item.image">
             <img
               class="timeline-item-image"
-              v-bind:src="require('../../../assets/topics/' + this.item.image)"
+              v-bind:src="require('../../../assets/topics/' + item.image)"
             />
           </div>
           <div><h1>{{ item.title }}</h1></div>

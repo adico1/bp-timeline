@@ -4,13 +4,17 @@
       <h1>Timeline</h1>
       <SearchComponent
         @search-query="queryChangedHandler"
-        @search-filter="filterChangedHandler"></SearchComponent>
+        @search-filter="filterChangedHandler"
+        :possibleQueries="possibleQueries"></SearchComponent>
       <TimelineItemSet @show-detail="showDetail"
         v-for="(timelineItemSet, index) in filtered"
         :key="index"
-        :timelineitemset="timelineItemSet">
+        :timelineitemset="timelineItemSet"
+        @delete-item="deleteItemHandler">
       </TimelineItemSet>
-      <div @click="loadMoreHandler"><i class=""></i> Load More</div>
+      <div class="load-more-podium" @click="loadMoreHandler">
+        <span><chevron-down-icon></chevron-down-icon> Load More</span>
+      </div>
     </section>
     <div class="modal-podium" :class="{ 'detail-modal': detailTimelineItem === null }">
       <DetailModal
@@ -53,6 +57,8 @@ export default {
       maxItems: 10,
       query: '',
       filter: ALL_WORKS,
+      deleted: [],
+      possibleQueries: [],
     };
   },
   methods: {
@@ -82,21 +88,32 @@ export default {
     loadMoreHandler() {
       this.maxItems += 10;
     },
+    deleteItemHandler(itemId) {
+      if (this.deleted.indexOf(itemId) > -1) {
+        return;
+      }
+      this.deleted.push(itemId);
+    },
   },
   computed: {
     filtered() {
-      if (this.query === '' && this.filter === ALL_WORKS) {
-        return this.timelineItemSets;
-      }
-
       let count = 0;
       const newTimelineItemSets = [];
       this.timelineItemSets.forEach((timelineItemSet) => {
         const items = timelineItemSet.items.filter((timelineItem) => {
+          if (this.deleted.indexOf(timelineItem.id) > -1) {
+            return false;
+          }
+
           if (count >= this.maxItems) {
             return false;
           }
           count += 1;
+
+          if (this.query === '' && this.filter === ALL_WORKS) {
+            return true;
+          }
+
           return this.titleContains(timelineItem, this.query)
             && this.filterMatch(timelineItem, this.filter);
         });
@@ -124,7 +141,7 @@ export default {
         if (this.version === 'v2') {
           data = TimelineMapper.mapv2tov1(data);
         }
-        this.timelineItemSets = TimelineMapper.mapV1(data);
+        [this.timelineItemSets, this.possibleQueries] = TimelineMapper.mapV1(data);
         return this.info;
       })
       .catch((error) => {
@@ -156,5 +173,11 @@ export default {
   z-index: 100;
   padding:0;
   margin: 0;
+}
+.load-more-podium {
+  text-align: center;
+}
+.load-more-podium span {
+  cursor: pointer;
 }
 </style>

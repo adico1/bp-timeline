@@ -69,6 +69,9 @@ export default {
     itemClickHandler() {
       this.$emit('click', this.timelineItem);
     },
+    deleteItemHandler(itemId) {
+      this.$emit('delete-item', itemId);
+    },
   },
 };
 </script>

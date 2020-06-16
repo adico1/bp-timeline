@@ -1,10 +1,22 @@
 <template>
   <nav>
     <div class="search-form">
-      <input v-model="query" class="search-timeline-input" placeholder="Search Timeline">
-      <button class="search-button" @click="searchClickHandler">
-        <magnify-icon class="icon-2x"></magnify-icon>
-      </button>
+      <div>
+        <input v-model="query" class="search-timeline-input" placeholder="Search Timeline">
+        <button class="search-button" @click="searchClickHandler">
+          <magnify-icon class="icon-2x"></magnify-icon>
+        </button>
+      </div>
+      <div class="auto-complete-podium" :class="{ 'is-open': isDrawerOpen }">
+        <ul class="auto-complete-gadget">
+          <li
+            @click="handleSelectQuery(possibleQuery)"
+            v-for="(possibleQuery, index) in filterPossibleQueries"
+            :key="index">
+            {{ possibleQuery }}
+          </li>
+        </ul>
+      </div>
     </div>
     <div class="filter-header">Filter By:</div>
     <button
@@ -23,6 +35,7 @@ import timelineItemTypeConfig from '../models/TimelineItemTypeConfig';
 export default {
   name: 'SearchComponent',
   props: {
+    possibleQueries: Array,
   },
   data() {
     return {
@@ -44,6 +57,22 @@ export default {
     filterClickHandler(filter, filterType) {
       this.selectedFilter = filter;
       this.$emit('search-filter', filterType);
+    },
+    handleSelectQuery(possibleQuery) {
+      this.query = possibleQuery;
+    },
+  },
+  computed: {
+    filterPossibleQueries() {
+      if (this.query.length === 0) return this.possibleQueries;
+      return this.possibleQueries.filter(item => item.indexOf(this.query) > -1);
+    },
+    isDrawerOpen() {
+      return (
+        this.query.length > 0
+        && (this.filterPossibleQueries.length > 2
+            || (this.filterPossibleQueries.length === 1
+                && this.filterPossibleQueries[0] !== this.query)));
     },
   },
 };
@@ -72,6 +101,10 @@ export default {
   font-size: 16px;
 }
 .search-form {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 17.75rem;
   margin: 10px 0
 }
 .filter-header {
@@ -88,8 +121,32 @@ export default {
   font-weight: bold;
   color: #008181;
 }
-
 .filter-button-active {
   background-color: #ECFDFF;
+}
+.auto-complete-podium {
+  display: none;
+  position: absolute;
+  top: calc(1.5rem - 1px);
+  width: 17.75rem;
+  z-index: 100;
+}
+
+.auto-complete-podium ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  max-height: 10rem;
+  overflow-y: scroll;
+}
+.auto-complete-podium ul li:hover{
+  background-color: #ffff00;
+}
+.auto-complete-gadget {
+  background-color: #fff;
+  border: 1px solid #000;
+}
+.is-open {
+  display: block;
 }
 </style>

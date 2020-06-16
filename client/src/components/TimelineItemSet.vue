@@ -6,6 +6,7 @@
       :key="timelineitem.id"
       :timelineItem="timelineitem"
       @click="itemClickHandler"
+      @delete-item="deleteItemHandler"
       class="timeline-item">
     </TimelineItem>
   </section>
@@ -27,6 +28,9 @@ export default {
   methods: {
     itemClickHandler(timelineItem) {
       this.$emit('show-detail', timelineItem);
+    },
+    deleteItemHandler(itemId) {
+      this.$emit('delete-item', itemId);
     },
   },
 };

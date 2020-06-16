@@ -44,6 +44,7 @@ export default class TimelineMapper {
 
   static mapV1(apiResponseTimeline) {
     const timelineItemSets = [];
+    const possibleAutoComplete = [];
 
     let lastMonthName = null;
     let timelineItemsMonthly = null;
@@ -62,10 +63,12 @@ export default class TimelineMapper {
         }
 
         const timelineItem = TimelineMapper.mapItem(item);
+        possibleAutoComplete.push(timelineItem.title);
+
         timelineItemsMonthly.items.push(timelineItem);
       });
 
-    return timelineItemSets;
+    return [timelineItemSets, possibleAutoComplete];
   }
 
   static mapv2tov1(v2response) {
