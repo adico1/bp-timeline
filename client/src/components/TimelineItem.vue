@@ -6,6 +6,7 @@
         class="timeline-item-image"
         v-bind:src="require('../../../assets/topics/' + this.timelineItem.image)"
         alt="">
+      <div v-if="isBpJr" class="product-tag">JR</div>
     </div>
     <div class="flex-stretch">{{ timelineItem.title }}<br>
     {{ formattedDate }} · {{ formattedTime }}</div>
@@ -55,6 +56,9 @@ export default {
     isScoreType() {
       return types.getScoreByType(this.timelineItem.type);
     },
+    isBpJr() {
+      return this.timelineItem.product === 'bpjr';
+    },
   },
   methods: {
     itemClickHandler() {
@@ -77,11 +81,22 @@ export default {
 }
 .flex-thin {
   flex: 0.2;
+  position: relative;
 }
 .flex-base {
   flex: 1;
 }
 .flex-stretch {
   flex: 6;
+}
+.product-tag {
+  background-color: #ffff00;
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  font-size: 10px;
+  border-radius: 50%;
+  top: 22px;
+  left: 20px;
 }
 </style>
