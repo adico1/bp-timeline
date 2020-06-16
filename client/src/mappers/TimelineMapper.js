@@ -25,7 +25,7 @@ export default class TimelineMapper {
     const tName = StringUtil.nameCapitalize(item.topic_data.name);
     const tType = item
       .resource_type
-      .replace('_', ' ')
+      .replace(/_/g, ' ')
       .split(' ')
       .map(word => StringUtil.nameCapitalize(word))
       .join(' ');
