@@ -10,11 +10,12 @@
         :key="index"
         :timelineitemset="timelineItemSet">
       </TimelineItemSet>
-      <i class=""></i> Load More
+      <div @click="loadMoreHandler"><i class=""></i> Load More</div>
     </section>
     <div class="modal-podium" :class="{ 'detail-modal': detailTimelineItem === null }">
       <DetailModal
         :item="detailTimelineItem"
+        @close-modal="modelCloseHandler"
          />
       </div>
   </div>
@@ -31,11 +32,10 @@ import TimelineMapper from '../mappers/TimelineMapper';
 import TimelineItemSetModel from '../models/TimelineItemSetModel';
 import TimelineItemType from '../models/TimelineItemType';
 
+const ALL_WORKS = 'All Work';
+
 export default {
   name: 'Timeline',
-  props: {
-    msg: String,
-  },
   components: {
     SearchComponent,
     TimelineItemSet,
@@ -43,11 +43,13 @@ export default {
   },
   data() {
     return {
+      loading: true,
+      errored: false,
       timelineItemSets,
       detailTimelineItem: null,
       maxItems: 10,
       query: '',
-      filter: 'All Work',
+      filter: ALL_WORKS,
     };
   },
   methods: {
@@ -66,15 +68,21 @@ export default {
       return timelineItem.title.indexOf(query) > -1;
     },
     filterMatch(timelineItem, filter) {
-      if (filter === 'All Work') {
+      if (filter === ALL_WORKS) {
         return true;
       }
       return timelineItem.type === TimelineItemType[filter];
     },
+    modelCloseHandler() {
+      this.detailTimelineItem = null;
+    },
+    loadMoreHandler() {
+      this.maxItems += 10;
+    },
   },
   computed: {
     filtered() {
-      if (this.query === '' && this.filter === 'All Work') {
+      if (this.query === '' && this.filter === ALL_WORKS) {
         return this.timelineItemSets;
       }
 
@@ -103,13 +111,7 @@ export default {
     axios
       .get('http://localhost:3000/activities/v1')
       .then((response) => {
-        // eslint-disable-next-line no-console
-        console.log('response', response);
-
         this.timelineItemSets = TimelineMapper.mapV1(response.data);
-        // eslint-disable-next-line no-console
-        console.log('Request 2 type of response', typeof this.info);
-        // console.log(this.info);
         return this.info;
       })
       .catch((error) => {

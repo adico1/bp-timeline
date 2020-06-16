@@ -43,12 +43,7 @@ export default {
       return '';
     },
     getImage() {
-      // eslint-disable-next-line no-console
-      console.log('getImage', this.timelineItem);
-
       if (this.timelineItem) {
-        // eslint-disable-next-line no-console
-        console.log('hello');
         return `../../../../assets/topics/${this.timelineItem.image}`;
       }
 

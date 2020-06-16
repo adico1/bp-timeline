@@ -1,21 +1,24 @@
 <template>
   <div v-if="item" class="detail-model-podium">
     <div class="flex-center">
-      <div class="close-icon-podium">
+      <div class="close-icon-podium" @click="closeClickHandler">
         <close-circle-outline class="icon-2x"></close-circle-outline>
       </div>
       <div class="dialog-content">
         <div class="item-info-podium">
-          <div><img class="timeline-item-image" :src="item.imageSource" /></div>
-          <div>{{ item.title }}</div>
+          <div>
+            <img
+              class="timeline-item-image"
+              v-bind:src="require('../../../assets/topics/' + this.item.image)"
+            />
+          </div>
+          <div><h1>{{ item.title }}</h1></div>
           <div>{{ formattedDate }} · {{ formattedTime }}</div>
         </div>
-        <div>
+        <div class="teacher-review">
           <br>
-          {{ item.description }}<br>
-          <br>
-          <br>
-          Score {{ item.score }}/{{ item.ofScore }}
+          <h2>{{ item.teacherComment }}</h2><br>
+          <div v-if="item.score">Score {{ item.score }}/{{ item.ofScore }}</div>
         </div>
       </div>
     </div>
@@ -24,6 +27,7 @@
 
 <script>
 import TimelineItemModel from '../models/TimelineItemModel';
+import DateUtil from '../utils/date-util';
 
 export default {
   name: 'DetailModel',
@@ -32,10 +36,25 @@ export default {
   },
   computed: {
     formattedDate() {
-      return 'Oct 28, 2019';
+      if (this.item) {
+        return DateUtil.formatDate(this.item.date);
+      }
+
+      return '';
     },
     formattedTime() {
-      return '7:08 pm';
+      if (this.item) {
+        return DateUtil.formatTime(this.item.date);
+      }
+
+      return '';
+    },
+    getImage() {
+      if (this.item) {
+        return `../../../assets/topics/${this.item.image}`;
+      }
+
+      return '';
     },
   },
   data() {
@@ -43,6 +62,11 @@ export default {
       filters: ['All Work', 'Movie', 'Quiz', 'Easy Quiz'],
       selectedFilter: 'All Work',
     };
+  },
+  methods: {
+    closeClickHandler() {
+      this.$emit('close-modal');
+    },
   },
 };
 </script>
@@ -78,5 +102,15 @@ export default {
 .item-info-podium {
   text-align: center;
   width: 100%;
+}
+.timeline-item-image {
+  margin-top: 20px;
+  width: 60px;
+  height: 60px;
+  background-color: #008181;
+  border-radius: 50%;
+}
+.teacher-review {
+  margin-left: 20px;
 }
 </style>
