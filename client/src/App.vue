@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <router-link :to="{ name: 'zoom', params: { id: 1 }, }">
+      <h2>Zoom</h2>
+    </router-link>
     <router-view/>
   </div>
 </template>

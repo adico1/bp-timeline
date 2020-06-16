@@ -18,6 +18,30 @@ const v1Mapper = {
 };
 
 export default class TimelineMapper {
+  static mapItem(item) {
+    const itemDate = new Date((`${item.d_created}000`) * 1);
+
+    const timelineItem = new TimelineItemModel();
+    const tName = StringUtil.nameCapitalize(item.topic_data.name);
+    const tType = item
+      .resource_type
+      .replace('_', ' ')
+      .split(' ')
+      .map(word => StringUtil.nameCapitalize(word))
+      .join(' ');
+
+    timelineItem.id = item.id;
+    timelineItem.title = `${tName} ${tType}`;
+    timelineItem.date = itemDate;
+    timelineItem.type = TimelineItemType[v1Mapper[item.resource_type]];
+    timelineItem.image = FileUtil.getFilename(item.topic_data.icon_path);
+    timelineItem.teacherComment = item.comment;
+    timelineItem.score = item.score;
+    timelineItem.ofScore = item.possible_score;
+    timelineItem.product = item.product;
+    return timelineItem;
+  }
+
   static mapV1(apiResponseTimeline) {
     const timelineItemSets = [];
 
@@ -37,27 +61,21 @@ export default class TimelineMapper {
           timelineItemSets.push(timelineItemsMonthly);
         }
 
-        const timelineItem = new TimelineItemModel();
-        const tName = StringUtil.nameCapitalize(item.topic_data.name);
-        const tType = item
-          .resource_type
-          .replace('_', ' ')
-          .split(' ')
-          .map(word => StringUtil.nameCapitalize(word))
-          .join(' ');
-
-        timelineItem.id = item.id;
-        timelineItem.title = `${tName} ${tType}`;
-        timelineItem.date = itemDate;
-        timelineItem.type = TimelineItemType[v1Mapper[item.resource_type]];
-        timelineItem.image = FileUtil.getFilename(item.topic_data.icon_path);
-        timelineItem.teacherComment = item.comment;
-        timelineItem.score = item.score;
-        timelineItem.ofScore = item.possible_score;
-        timelineItem.product = item.product;
+        const timelineItem = TimelineMapper.mapItem(item);
         timelineItemsMonthly.items.push(timelineItem);
       });
 
     return timelineItemSets;
+  }
+
+  static mapv2tov1(v2response) {
+    const newArr = [];
+    v2response.forEach((resourceItem) => {
+      resourceItem.activities.forEach((activity) => {
+        newArr.push({ ...activity, resource_type: resourceItem.resource_type });
+      });
+    });
+
+    return newArr;
   }
 }

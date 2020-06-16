@@ -36,6 +36,9 @@ const ALL_WORKS = 'All Work';
 
 export default {
   name: 'Timeline',
+  props: {
+    version: String,
+  },
   components: {
     SearchComponent,
     TimelineItemSet,
@@ -108,8 +111,13 @@ export default {
     },
   },
   mounted() {
+    let apiUrl = 'http://localhost:3000/activities/v1';
+    if (this.version === 'v2') {
+      apiUrl = 'http://localhost:3000/activities/v2';
+    }
+
     axios
-      .get('http://localhost:3000/activities/v1')
+      .get(apiUrl)
       .then((response) => {
         this.timelineItemSets = TimelineMapper.mapV1(response.data);
         return this.info;
