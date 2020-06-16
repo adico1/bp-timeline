@@ -10,6 +10,7 @@ import App from './App.vue';
 import router from './router';
 import 'normalize.css';
 import 'vue-material-design-icons/styles.css';
+import store from './store';
 
 Vue.config.productionTip = false;
 Vue.component('magnify-icon', MagnifyIcon);
@@ -21,6 +22,7 @@ Vue.component('check-circle-icon', CheckCircleIcon);
 
 
 new Vue({
+  store,
   router,
   render: h => h(App),
 }).$mount('#app');

@@ -5,7 +5,7 @@
       <SearchComponent
         @search-query="queryChangedHandler"
         @search-filter="filterChangedHandler"
-        :possibleQueries="possibleQueries"></SearchComponent>
+        :possibleQueries="this.$store.getters.possibleQueries"></SearchComponent>
       <TimelineItemSet @show-detail="showDetail"
         v-for="(timelineItemSet, index) in filtered"
         :key="index"
@@ -26,13 +26,10 @@
 </template>
 
 <script>
-import axios from 'axios';
 import SearchComponent from './SearchComponent.vue';
 import TimelineItemSet from './TimelineItemSet.vue';
 import DetailModal from './DetailModal.vue';
-import timelineItemSets from '../mocks/timeline.mock';
 import types from '../utils/timeline-item-type.util';
-import TimelineMapper from '../mappers/TimelineMapper';
 import TimelineItemSetModel from '../models/TimelineItemSetModel';
 import TimelineItemType from '../models/TimelineItemType';
 
@@ -52,7 +49,7 @@ export default {
     return {
       loading: true,
       errored: false,
-      timelineItemSets,
+      timelineItemSets: [],
       detailTimelineItem: null,
       maxItems: 10,
       query: '',
@@ -99,59 +96,42 @@ export default {
     filtered() {
       let count = 0;
       const newTimelineItemSets = [];
-      this.timelineItemSets.forEach((timelineItemSet) => {
-        const items = timelineItemSet.items.filter((timelineItem) => {
-          if (this.deleted.indexOf(timelineItem.id) > -1) {
-            return false;
-          }
+      const timelineItemSetsEx = this.$store.getters.timelineItemSets;
+      if (timelineItemSetsEx) {
+        timelineItemSetsEx.forEach((timelineItemSet) => {
+          const items = timelineItemSet.items.filter((timelineItem) => {
+            if (this.deleted.indexOf(timelineItem.id) > -1) {
+              return false;
+            }
 
-          if (count >= this.maxItems) {
-            return false;
-          }
-          count += 1;
+            if (count >= this.maxItems) {
+              return false;
+            }
+            count += 1;
 
-          if (this.query === '' && this.filter === ALL_WORKS) {
-            return true;
-          }
+            if (this.query === '' && this.filter === ALL_WORKS) {
+              return true;
+            }
 
-          return this.titleContains(timelineItem, this.query)
-            && this.filterMatch(timelineItem, this.filter);
+            return this.titleContains(timelineItem, this.query)
+              && this.filterMatch(timelineItem, this.filter);
+          });
+          const newTimelineItemSet = new TimelineItemSetModel(items, timelineItemSet.month);
+
+          if (newTimelineItemSet.items.length) {
+            newTimelineItemSets.push(newTimelineItemSet);
+          }
         });
-        const newTimelineItemSet = new TimelineItemSetModel(items, timelineItemSet.month);
-
-        if (newTimelineItemSet.items.length) {
-          newTimelineItemSets.push(newTimelineItemSet);
-        }
-      });
-
+      }
       return newTimelineItemSets;
     },
   },
   mounted() {
-    let apiUrl = 'http://localhost:3000/activities/v1';
     if (this.version === 'v2') {
-      apiUrl = 'http://localhost:3000/activities/v2';
+      this.$store.dispatch('fetchTimelineItemsV2');
+      return;
     }
-
-    axios
-      .get(apiUrl)
-      .then((response) => {
-        let { data } = response;
-
-        if (this.version === 'v2') {
-          data = TimelineMapper.mapv2tov1(data);
-        }
-        [this.timelineItemSets, this.possibleQueries] = TimelineMapper.mapV1(data);
-        return this.info;
-      })
-      .catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error(error);
-        this.errored = true;
-      })
-      .finally(() => {
-        this.loading = false;
-      });
+    this.$store.dispatch('fetchTimelineItemsV1');
   },
 };
 </script>
