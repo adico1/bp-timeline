@@ -39,9 +39,16 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .timeline-month-name {
-  margin: 10px 0;
+  font-size: 12px;
+  margin: 10px 10px 0 10px;
+  background-color: #FBF9E5;
+  border-radius:20px;
+  width: 78px;
+  height: 18px;
+  text-align: center;
+  padding-top: 3px;
 }
 .timeline-item {
-  margin: 10px 0;
+  margin: 0;
 }
 </style>

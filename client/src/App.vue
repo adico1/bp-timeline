@@ -1,8 +1,16 @@
 <template>
   <div id="app">
-    <router-link :to="{ name: 'zoom', params: { id: 1 }, }">
-      <h2>Zoom</h2>
-    </router-link>
+    <nav id="nav">
+      <router-link :to="{ name: 'home', }">
+        <div>V1</div>
+      </router-link>
+      <router-link :to="{ name: 'v2', }">
+        <div>V2</div>
+      </router-link>
+      <router-link :to="{ name: 'zoom', params: { id: 1 }, }">
+        <div>Zoom</div>
+      </router-link>
+    </nav>
     <router-view/>
   </div>
 </template>
@@ -17,12 +25,14 @@
 }
 
 #nav {
-  padding: 30px;
+  display: flex;
+  padding: 0px;
 }
 
 #nav a {
   font-weight: bold;
   color: #2c3e50;
+  margin-right: 1rem;
 }
 
 #nav a.router-link-exact-active {

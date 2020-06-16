@@ -24,7 +24,7 @@
       @click="filterClickHandler(filter, filterType)"
       class="filter-button"
       :class="{ 'filter-button-active': selectedFilter === filter }">
-        {{filter}}
+        <check-circle-icon v-if="selectedFilter === filter"></check-circle-icon> {{filter}}
     </button>
   </nav>
 </template>
