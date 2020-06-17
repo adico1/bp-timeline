@@ -129,9 +129,9 @@ export default {
   mounted() {
     if (this.version === 'v2') {
       this.$store.dispatch('fetchTimelineItemsV2');
-      return;
+    } else {
+      this.$store.dispatch('fetchTimelineItemsV1');
     }
-    this.$store.dispatch('fetchTimelineItemsV1');
   },
 };
 </script>

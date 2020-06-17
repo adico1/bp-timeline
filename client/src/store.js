@@ -40,7 +40,7 @@ const store = new Vuex.Store({
         let { data } = response;
 
         data = TimelineMapper.mapv2tov1(data);
-        const { timelineItemSets, possibleQueries } = TimelineMapper.mapV1(data);
+        const [timelineItemSets, possibleQueries] = TimelineMapper.mapV1(data);
 
         context.commit('SET_LOADING_STATUS', false);
         context.commit('SET_TIMELINE_DATA', timelineItemSets, possibleQueries);

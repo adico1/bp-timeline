@@ -1,12 +1,12 @@
 <template>
-  <div :v-if="item" class="detail-model-podium">
+  <div v-if="item" class="detail-model-podium">
     <div class="flex-center">
       <div class="close-icon-podium" @click="closeClickHandler">
         <close-circle-outline class="icon-2x"></close-circle-outline>
       </div>
       <div class="dialog-content">
         <div class="item-info-podium">
-          <div :v-if="item.image">
+          <div>
             <img
               class="timeline-item-image"
               v-bind:src="require('../../../assets/topics/' + item.image)"

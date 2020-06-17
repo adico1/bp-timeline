@@ -5,8 +5,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-import TimelineMapper from '../mappers/TimelineMapper';
 // @ is an alias to /src
 import DetailModal from '@/components/DetailModal.vue';
 
@@ -15,32 +13,27 @@ export default {
   components: {
     DetailModal,
   },
-  data() {
-    return {
-      item: null,
-    };
+  computed: {
+    item() {
+      let retItem = null;
+      const matchId = this.$route.params.id;
+
+      const timelineItemSetsEx = this.$store.getters.timelineItemSets;
+      timelineItemSetsEx.forEach((timelineItemSet) => {
+        timelineItemSet.items.forEach((item) => {
+          if (item.id === matchId) {
+            retItem = item;
+          }
+        });
+      });
+
+      return retItem;
+    },
   },
   mounted() {
     if (this.item) { return; }
 
-    axios
-      .get('http://localhost:3000/activities/v1')
-      .then((response) => {
-        response.data.forEach((item) => {
-          if (item.id === this.$route.params.id) {
-            this.item = TimelineMapper.mapItem(item);
-          }
-        });
-        return this.info;
-      })
-      .catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error(error);
-        this.errored = true;
-      })
-      .finally(() => {
-        this.loading = false;
-      });
+    this.$store.dispatch('fetchTimelineItemsV1');
   },
 };
 </script>

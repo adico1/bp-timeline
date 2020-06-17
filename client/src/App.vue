@@ -1,15 +1,9 @@
 <template>
   <div id="app">
     <nav id="nav">
-      <router-link :to="{ name: 'home', }">
-        <div>V1</div>
-      </router-link>
-      <router-link :to="{ name: 'v2', }">
-        <div>V2</div>
-      </router-link>
-      <router-link :to="{ name: 'zoom', params: { id: 1 }, }">
-        <div>Zoom</div>
-      </router-link>
+      <a href="/">V1</a>
+      <a href="/v2">V2</a>
+      <a href="/zoom/1">Zoom</a>
     </nav>
     <router-view/>
   </div>
